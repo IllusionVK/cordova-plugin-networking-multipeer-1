@@ -22,16 +22,16 @@ exports.getLocalPeerInfo = function(success, error) {
 	exec(success, error, 'NetworkingMultipeer', 'getLocalPeerInfo', []);
 };
 
-exports.startAdvertising = function(serviceType, success, error) {
-	exec(success, error, 'NetworkingMultipeer', 'startAdvertising', [serviceType]);
+exports.startAdvertising = function(serviceType, displayName, success, error) {
+	exec(success, error, 'NetworkingMultipeer', 'startAdvertising', [serviceType, displayName]);
 };
 
 exports.stopAdvertising = function(success, error) {
 	exec(success, error, 'NetworkingMultipeer', 'stopAdvertising', []);
 };
 
-exports.startBrowsing = function(serviceType, success, error) {
-	exec(success, error, 'NetworkingMultipeer', 'startBrowsing', [serviceType]);
+exports.startBrowsing = function(serviceType, displayName, success, error) {
+	exec(success, error, 'NetworkingMultipeer', 'startBrowsing', [serviceType, displayName]);
 };
 
 exports.stopBrowsing = function(success, error) {
