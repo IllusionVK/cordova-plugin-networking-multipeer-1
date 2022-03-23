@@ -22,8 +22,8 @@ exports.getLocalPeerInfo = function(success, error) {
 	exec(success, error, 'NetworkingMultipeer', 'getLocalPeerInfo', []);
 };
 
-exports.startAdvertising = function(serviceType, displayName, success, error) {
-	exec(success, error, 'NetworkingMultipeer', 'startAdvertising', [serviceType, displayName]);
+exports.startAdvertising = function(serviceType, displayName, discoveryInfo, success, error) {
+	exec(success, error, 'NetworkingMultipeer', 'startAdvertising', [serviceType, displayName, discoveryInfo]);
 };
 
 exports.stopAdvertising = function(success, error) {
@@ -38,8 +38,8 @@ exports.stopBrowsing = function(success, error) {
 	exec(success, error, 'NetworkingMultipeer', 'stopBrowsing', []);
 };
 
-exports.invitePeer = function (peerId, success, error) {
-	exec(success, error, 'NetworkingMultipeer', 'invitePeer', [peerId]);
+exports.invitePeer = function (peerId, context, success, error) {
+	exec(success, error, 'NetworkingMultipeer', 'invitePeer', [peerId, context]);
 };
 
 exports.acceptInvitation = function (invitationId, success, error) {

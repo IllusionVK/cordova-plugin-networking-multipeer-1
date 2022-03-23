@@ -164,10 +164,20 @@ import MultipeerConnectivity
             do {
                 try TryCatch.try({
                     let displayName = command.arguments[1] as? String
+                    let info = command.arguments[2] as? NSDictionary
 
                     self.initSession(displayName)
+                    
+                    var discoveryInfo = [String: String]()
 
-                    let advertiser = MCNearbyServiceAdvertiser(peer: self.localPeerID, discoveryInfo: nil, serviceType: serviceType)
+                    for (key, value) in info ?? [:] {
+                        let k = key as! String
+                        let v = String(describing: value)
+
+                        discoveryInfo[k] = v
+                    }
+
+                    let advertiser = MCNearbyServiceAdvertiser(peer: self.localPeerID, discoveryInfo: discoveryInfo, serviceType: serviceType)
                     self.serviceAdvertiser = advertiser
                     advertiser.delegate = self
                     advertiser.startAdvertisingPeer()
@@ -237,7 +247,10 @@ import MultipeerConnectivity
         let pluginResult: CDVPluginResult
 
         if let browser = self.serviceBrowser, let id = command.arguments[0] as? Int, self.knownPeers[id] != nil {
-            browser.invitePeer(self.knownPeers[id]!, to: self.session, withContext: nil, timeout: 0)
+            let contextDic = command.arguments[1] as? NSDictionary
+            let context: Data = NSKeyedArchiver.archivedData(withRootObject: contextDic as Any)
+
+            browser.invitePeer(self.knownPeers[id]!, to: self.session, withContext: context, timeout: 0)
 
             pluginResult = CDVPluginResult(status: CDVCommandStatus_OK)
         } else {
@@ -311,11 +324,14 @@ import MultipeerConnectivity
             let invitationId = self.nextInvitationId!
             self.nextInvitationId! += 1
             self.invitationHandlers[invitationId] = invitationHandler
+            
+            let info: Dictionary? = NSKeyedUnarchiver.unarchiveObject(with: context!) as? [String : Any]
 
             let pluginResult = CDVPluginResult(status: CDVCommandStatus_OK, messageAsMultipart: [[
                 "id": id,
                 "name": peerID.displayName,
                 "hash": NSNumber(value: UInt32(bitPattern: Int32(truncatingIfNeeded: peerID.hash))),
+                "extraInfo": info as Any
             ], invitationId])
             pluginResult?.setKeepCallbackAs(true)
             self.commandDelegate.send(pluginResult, callbackId: callbackId)
@@ -346,6 +362,7 @@ import MultipeerConnectivity
                 "id": id,
                 "name": peerID.displayName,
                 "hash": NSNumber(value: UInt32(bitPattern: Int32(truncatingIfNeeded: peerID.hash))),
+                "extraInfo": info as Any
             ])
             pluginResult?.setKeepCallbackAs(true)
             self.commandDelegate.send(pluginResult, callbackId: callbackId)
